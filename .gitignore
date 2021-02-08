@@ -1,2 +1,5 @@
 *.sw*
 .vscode/
+
+// Ignore GAS compiled js file
+*.js
