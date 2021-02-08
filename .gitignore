@@ -1,5 +1,6 @@
 *.sw*
 .vscode/
+node_modules/
 
 // Ignore GAS compiled js file
 *.js
