@@ -67,6 +67,62 @@ function getElementData(
   }
 }
 
+
+const renderer: marked.Renderer = {
+
+  options: {},
+
+  // Block level renderer methods
+  code: (code, infostring, escaped) => {
+    return code;
+  },
+
+  blockquote: (quote) => {
+    return quote;
+  },
+
+  html: (html) => {
+    return html;
+  },
+
+  heading: (text, level) => {
+    return text;
+  },
+
+  hr: () => '',
+
+  list: (body, ordered, start) => '',
+
+  listitem: (text) => '',
+
+  checkbox: (checked) => '',
+
+  paragraph: (text) => '',
+
+  table: (header, body) => '',
+
+  tablerow: (content) => '',
+
+  tablecell: (content, flags) => '',
+
+  // Inline level renderer methods
+  strong: (text) => text,
+
+  em: (text) => text,
+
+  codespan: (code) => code,
+
+  br: () => '',
+
+  del: (text) => text,
+
+  link: (href, title, text) => title,
+
+  image: (href, title, text) => text,
+
+  text: (text) => text,
+}
+
 /**
  * Convert selected elements to markdown.
  */
@@ -80,10 +136,9 @@ function convertMarkdown() {
     const textDatas = elements.map(getElementData);
 
     const rawText = textDatas.map(data => data.isText ? data.plainText : '[NON_TEXT]').join('\n');
-    console.log(rawText);
+    marked.use({ renderer });
 
     const html = marked(rawText);
     console.log(html);
-
   }
 }
