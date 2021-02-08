@@ -3,4 +3,4 @@
 node_modules/
 
 // Ignore GAS compiled js file
-*.js
+src/*.js
