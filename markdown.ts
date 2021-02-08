@@ -39,8 +39,6 @@ function getElementData(
   const element = rangeElement.getElement();
   const elementType = element.getType();
 
-  console.log(element.getType().toString())
-
   if (rangeElement.isPartial()) {
     const start = rangeElement.getStartOffset();
     const end = rangeElement.getEndOffsetInclusive();
@@ -80,6 +78,12 @@ function convertMarkdown() {
     const elements = selection.getRangeElements();
 
     const textDatas = elements.map(getElementData);
-    console.log(textDatas);
+
+    const rawText = textDatas.map(data => data.isText ? data.plainText : '[NON_TEXT]').join('\n');
+    console.log(rawText);
+
+    const html = marked(rawText);
+    console.log(html);
+
   }
 }
