@@ -17,6 +17,8 @@
   },
   "homepage": "https://github.com/intelliavant/gas-markdown-converter#readme",
   "devDependencies": {
-    "@types/google-apps-script": "^1.0.22"
-  }
+    "@types/google-apps-script": "^1.0.22",
+    "@types/marked": "^1.2.2"
+  },
+  "dependencies": {}
 }

@@ -2,12 +2,6 @@
   "timeZone": "America/New_York",
   "dependencies": {
     "libraries": [
-      {
-        "userSymbol": "marked",
-        "version": "2",
-        "libraryId": "1fzttWGjmX33TjG8oMBCRmUb-8FkMeDA4imuLPf6c8yi49aKJD5c-93iP",
-        "developmentMode": false
-      }
     ]
   },
   "exceptionLogging": "STACKDRIVER",
