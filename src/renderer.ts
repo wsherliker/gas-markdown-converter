@@ -1,4 +1,16 @@
-export const renderer: marked.Renderer = {
+// a position in the text.
+type Position = {
+  para: number;
+  char: number;
+}
+
+type BlockElement = {
+  start: Position; 
+  end: Position;
+  text: string;
+}
+
+const renderer: marked.Renderer = {
 
   options: {},
 
@@ -27,7 +39,7 @@ export const renderer: marked.Renderer = {
 
   checkbox: (checked) => '',
 
-  paragraph: (text) => '',
+  paragraph: (text) => text,
 
   table: (header, body) => '',
 
