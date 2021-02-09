@@ -2,6 +2,10 @@
  * @OnlyCurrentDoc
  */
 
+import marked from './vendor/marked';
+import { renderer } from './renderer';
+
+
 function onOpen(e) {
   DocumentApp.getUi()
     .createMenu("Markdown Converter")
@@ -67,10 +71,17 @@ function getElementData(
   }
 }
 
+function loadLibrary(name) {
+  const js = HtmlService.createTemplateFromFile(name).getRawContent();
+  eval(js);
+}
+
 /**
  * Convert selected elements to markdown.
  */
 function convertMarkdown() {
+
+
   const doc = DocumentApp.getActiveDocument();
   const selection = doc.getSelection();
 

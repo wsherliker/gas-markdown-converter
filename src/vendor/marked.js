@@ -9,11 +9,7 @@
  * The code in this file is generated from files in ./src/
  */
 
-(function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
-  typeof define === 'function' && define.amd ? define(factory) :
-  (global = typeof globalThis !== 'undefined' ? globalThis : global || self, global.marked = factory());
-}(this, (function () { 'use strict';
+var marked = (function () { 'use strict';
 
   function _defineProperties(target, props) {
     for (var i = 0; i < props.length; i++) {
@@ -2755,4 +2751,4 @@
 
   return marked_1;
 
-})));
+})();
