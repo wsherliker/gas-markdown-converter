@@ -1,6 +1,5 @@
-require('../src/vendor/marked');
-require('../src/renderer');
-
+import marked from '../src/vendor/marked';
+import { renderer } from '../src/renderer';
 
 describe('renderer', () => {
   it('should render bold correctly', () => {
