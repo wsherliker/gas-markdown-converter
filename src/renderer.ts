@@ -64,3 +64,5 @@ const renderer: marked.Renderer = {
 
   text: (text) => text,
 }
+
+export default renderer;

@@ -3,8 +3,7 @@
  */
 
 import marked from './vendor/marked';
-import { renderer } from './renderer';
-
+import renderer from './renderer';
 
 function onOpen(e) {
   DocumentApp.getUi()
@@ -71,8 +70,10 @@ function getElementData(
   }
 }
 
-function loadLibrary(name) {
-  const js = HtmlService.createTemplateFromFile(name).getRawContent();
+function loadMarkedJS() {
+  let js = HtmlService.createTemplateFromFile('vendor/marked.js.html').getRawContent();
+  js = js.replace('module.exports = factory()', 'marked = factory()');
+  
   eval(js);
 }
 
@@ -80,7 +81,6 @@ function loadLibrary(name) {
  * Convert selected elements to markdown.
  */
 function convertMarkdown() {
-
 
   const doc = DocumentApp.getActiveDocument();
   const selection = doc.getSelection();
@@ -96,4 +96,8 @@ function convertMarkdown() {
     const html = marked(rawText);
     console.log(html);
   }
+}
+
+if (typeof marked === 'undefined') {
+  loadMarkedJS();
 }
