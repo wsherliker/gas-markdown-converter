@@ -11,6 +11,8 @@ export type InlineAction = {
   length: number;
 };
 
+export type Action = CodeBlockAction | InlineAction;
+
 export type LineData = {
   startIndex: number;
   endIndex: number;
@@ -88,33 +90,27 @@ function maskInlineActions(actions: InlineAction[], str: string) {
   }, str);
 }
 
-type ReplaceFunction = (line: number, startPos: number, raw: string) => { actions: InlineAction[]; masked: string };
-
-function replaceBold(
-  line: number,
-  startPos: number,
+type ReplaceFunction = (
   raw: string
-) {
+) => { actions: InlineAction[]; masked: string };
+
+function replaceBold(raw: string) {
   const matches = matchAll(/\*\*(?:[^*]+?)\*\*/g, raw);
   const actions = matches.map(
     (m) =>
       ({
         type: "bold",
-        line,
-        startPos: startPos + m.index,
+        line: 0,
+        startPos: m.index,
         length: m[0].length,
       } as InlineAction)
   );
 
   const masked = maskInlineActions(actions, raw);
-  return {actions, masked};
+  return { actions, masked };
 }
 
-function replaceItalic(
-  line: number,
-  startPos: number,
-  raw: string
-) {
+function replaceItalic(raw: string) {
   const matches = matchAll(/\*(?:[^*]+?)\*/g, raw).filter((m) => {
     // filter out '**bold**' since GAS does not support lookbehind
     const start = m.index;
@@ -130,51 +126,65 @@ function replaceItalic(
     return true;
   });
 
-  const actions = matches.map((m) => ({
-    type: "italic",
-    line,
-    startPos: m.index,
-    length: m[0].length,
-  } as InlineAction));
+  const actions = matches.map(
+    (m) =>
+      ({
+        type: "italic",
+        line: 0,
+        startPos: m.index,
+        length: m[0].length,
+      } as InlineAction)
+  );
 
   const masked = maskInlineActions(actions, raw);
-  return {actions, masked};
+  return { actions, masked };
 }
 
-function replaceCode(line: number, startPos: number, raw: string) {
+function replaceCode(raw: string) {
   const matches = matchAll(/`(?:[^`]+?)`/g, raw);
-  const actions = matches.map((m) => ({
-    type: "code",
-    line,
-    startPos: m.index,
-    length: m[0].length,
-  } as InlineAction));
+  const actions = matches.map(
+    (m) =>
+      ({
+        type: "code",
+        line: 0,
+        startPos: m.index,
+        length: m[0].length,
+      } as InlineAction)
+  );
 
   const masked = maskInlineActions(actions, raw);
-  return {actions, masked};
-
+  return { actions, masked };
 }
 
 /**
  * Pipeline given replace functions. Since the replace function has two output: `actions` and `masked`,
  * some tricks are required to execute them sequentially.
- * @param funcs 
- * @param line 
- * @param startPos 
- * @param raw 
+ * @param funcs
+ * @param line
+ * @param startPos
+ * @param raw
  */
-function pipeReplaceFunctions(funcs: ReplaceFunction[], line: number, startPos: number, raw: string) {
-  const { allActions, str } = funcs.reduce<{ allActions: InlineAction[], str: string}>(({ allActions, str }, f) => {
-    const { actions, masked } = f(line, startPos, str);
-    return { allActions: [...allActions, ...actions], str: masked}
-  }, { allActions: [], str: raw });
+function pipeReplaceFunctions(funcs: ReplaceFunction[], raw: string) {
+  const { allActions, str } = funcs.reduce<{
+    allActions: InlineAction[];
+    str: string;
+  }>(
+    ({ allActions, str }, f) => {
+      const { actions, masked } = f(str);
+      return { allActions: [...allActions, ...actions], str: masked };
+    },
+    { allActions: [], str: raw }
+  );
 
   return { actions: allActions, masked: str };
 }
 
-function replaceInlineMarkdown(line: number, startPos: number, raw: string): InlineAction[] {
-  const { actions } = pipeReplaceFunctions([replaceBold, replaceItalic, replaceCode], line, startPos, raw);
-  actions.sort((a, b) => a.startPos - b.startPos);
+function replaceInlineMarkdown(raw: string): InlineAction[] {
+  const { actions } = pipeReplaceFunctions(
+    [replaceBold, replaceItalic, replaceCode],
+    raw
+  );
+  actions.sort((a, b) => b.startPos - a.startPos);
   return actions;
 }
 
@@ -195,8 +205,15 @@ function parseMarkdown(lines: Array<LineData>) {
       continue;
     }
 
-    const inlineActions = replaceInlineMarkdown(i, lines[i].startIndex, lines[i].raw);
-    actions = actions.concat(inlineActions);
+    const inlineActions = replaceInlineMarkdown(lines[i].raw);
+    // patch actions to handle partial case (i.e. selected text does not start from the beginning of the line)
+    const patchedInlineActions = inlineActions.map(a => ({
+      ...a,
+      line: i,
+      startPos: a.startPos + lines[i].startIndex,
+    }));
+
+    actions = actions.concat(patchedInlineActions);
   }
 
   actions.sort((a, b) => a.line - b.line);
