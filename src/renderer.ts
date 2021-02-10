@@ -10,6 +10,7 @@ type BlockElement = {
   text: string;
 }
 
+
 const renderer: marked.Renderer = {
 
   options: {},
@@ -48,9 +49,19 @@ const renderer: marked.Renderer = {
   tablecell: (content, flags) => '',
 
   // Inline level renderer methods
-  strong: (text) => {console.log('strong'); return text; },
+  strong: (text) => {
+    return {
+      isBold: true,
+      children: text,
+    }
+  },
 
-  em: (text) => text,
+  em: (text) => {
+    return {
+      isBold: true,
+      children: text,
+    }
+  },
 
   codespan: (code) => code,
 
@@ -62,7 +73,9 @@ const renderer: marked.Renderer = {
 
   image: (href, title, text) => text,
 
-  text: (text) => text,
+  text: (text) => {
+    return text;
+  },
 }
 
 export default renderer;

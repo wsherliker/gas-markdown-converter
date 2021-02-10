@@ -1,6 +1,9 @@
-import marked from "marked";
+import marked from "./vendor/marked";
 
 
-export const parser: marked.Parser = {
+class MyParser extends marked.Parser {
 
 }
+
+const parser = new MyParser();
+export default parser;
