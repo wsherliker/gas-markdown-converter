@@ -4,6 +4,7 @@
 
 import marked from './vendor/marked';
 import renderer from './renderer';
+import renderMarkdown from './markdown-renderer';
 
 function onOpen(e) {
   DocumentApp.getUi()
@@ -96,6 +97,11 @@ function convertMarkdown() {
     const html = marked(rawText);
     console.log(html);
   }
+}
+
+function test() {
+
+  console.log(renderMarkdown('**bold**plain*italic*'))
 }
 
 if (typeof marked === 'undefined') {
