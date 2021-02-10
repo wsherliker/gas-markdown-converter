@@ -18,9 +18,20 @@
  *     running in, inspect e.authMode.
  */
 function onOpen(e) {
-  DocumentApp.getUi().createMenu('Markdown')
-      .addItem('Convert', 'convertSelectedText')
+  DocumentApp.getUi().createAddonMenu()
+      .addItem('Start', 'showSidebar')
       .addToUi();
+}
+
+/**
+ * Opens a sidebar in the document containing the add-on's user interface.
+ * This method is only used by the regular add-on, and is never called by
+ * the mobile add-on version.
+ */
+function showSidebar() {
+  var ui = HtmlService.createHtmlOutputFromFile('sidebar')
+      .setTitle('Markdown Converter');
+  DocumentApp.getUi().showSidebar(ui);
 }
 
 /**
