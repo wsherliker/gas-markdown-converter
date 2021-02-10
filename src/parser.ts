@@ -12,7 +12,6 @@ type InlineAction = {
 };
 
 type LineData = {
-  text: GoogleAppsScript.Document.Text;
   startIndex: number;
   endIndex: number;
   raw: string;
@@ -108,11 +107,10 @@ function replaceInlineMarkdown(index: number, line: LineData): InlineAction[] {
     ...replaceCode(index, line),
   ];
   actions.sort((a, b) => a.startPos - b.startPos);
-  console.log(actions);
   return actions;
 }
 
-function renderMarkdown(lines: Array<LineData>) {
+function parseMarkdown(lines: Array<LineData>) {
   let actions = [];
 
   const codeBlockActions = replaceCodeBlock(lines);
@@ -144,5 +142,5 @@ export default {
   replaceCode,
   replaceInlineMarkdown,
   replaceCodeBlock,
-  renderMarkdown,
+  parseMarkdown,
 };

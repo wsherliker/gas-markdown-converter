@@ -1,4 +1,4 @@
-import renderer from "../src/renderer";
+import parser from "../src/parser";
 
 const makeLines = (text) => {
   return text.map((t) => ({
@@ -11,14 +11,14 @@ const makeLines = (text) => {
 describe("replaceCodeBlock", () => {
   it("should do nothing when code block does not exist", () => {
     const lines = makeLines(["abcd", "abcd"]);
-    const actions = renderer.replaceCodeBlock(lines);
+    const actions = parser.replaceCodeBlock(lines);
     expect(actions).toEqual([]);
   });
 
   it("should replace code block", () => {
     const lines = makeLines(["```", "Hello, world", "```"]);
 
-    const actions = renderer.replaceCodeBlock(lines);
+    const actions = parser.replaceCodeBlock(lines);
 
     expect(actions).toEqual([
       {
@@ -43,7 +43,7 @@ describe("replaceCodeBlock", () => {
       "abc", // 9
     ]);
 
-    const actions = renderer.replaceCodeBlock(lines);
+    const actions = parser.replaceCodeBlock(lines);
 
     expect(actions).toEqual([
       {
@@ -62,7 +62,7 @@ describe("replaceCodeBlock", () => {
   it("should ignore if the first line is partial", () => {
     const lines = makeLines(["```", "test", "```"]);
     lines[0].startIndex = 10;
-    const actions = renderer.replaceCodeBlock(lines);
+    const actions = parser.replaceCodeBlock(lines);
     expect(actions).toEqual([]);
   });
 });
@@ -70,19 +70,19 @@ describe("replaceCodeBlock", () => {
 describe("replaceBold", () => {
   it("should do nothing if no bold", () => {
     const lines = makeLines(["test"]);
-    const actions = renderer.replaceBold(0, lines[0]);
+    const actions = parser.replaceBold(0, lines[0]);
     expect(actions).toEqual([]);
   });
 
   it("should not replace empty tags", () => {
     const lines = makeLines(["****"]);
-    const actions = renderer.replaceCodeBlock(lines);
+    const actions = parser.replaceCodeBlock(lines);
     expect(actions).toEqual([]);
   });
 
   it("should replace bold", () => {
     const lines = makeLines(["plain **bold** plain"]);
-    const actions = renderer.replaceBold(0, lines[0]);
+    const actions = parser.replaceBold(0, lines[0]);
     expect(actions).toEqual([
       {
         type: "bold",
@@ -95,7 +95,7 @@ describe("replaceBold", () => {
 
   it("should replace multiple bold", () => {
     const lines = makeLines(["plain **bold** plain **bold2**"]);
-    const actions = renderer.replaceBold(1, lines[0]);
+    const actions = parser.replaceBold(1, lines[0]);
     expect(actions).toEqual([
       {
         type: "bold",
@@ -116,19 +116,19 @@ describe("replaceBold", () => {
 describe("replaceItalic", () => {
   it("should do nothing if no italic", () => {
     const lines = makeLines(["test"]);
-    const actions = renderer.replaceItalic(0, lines[0]);
+    const actions = parser.replaceItalic(0, lines[0]);
     expect(actions).toEqual([]);
   });
 
   it("should not replace empty tags", () => {
     const lines = makeLines(["**"]);
-    const actions = renderer.replaceCodeBlock(lines);
+    const actions = parser.replaceCodeBlock(lines);
     expect(actions).toEqual([]);
   });
 
   it("should replace italic", () => {
     const lines = makeLines(["plain *italic* plain"]);
-    const actions = renderer.replaceItalic(0, lines[0]);
+    const actions = parser.replaceItalic(0, lines[0]);
     expect(actions).toEqual([
       {
         type: "italic",
@@ -141,7 +141,7 @@ describe("replaceItalic", () => {
 
   it("should replace multiple italic", () => {
     const lines = makeLines(["plain *italic* plain *italic2*"]);
-    const actions = renderer.replaceItalic(1, lines[0]);
+    const actions = parser.replaceItalic(1, lines[0]);
     expect(actions).toEqual([
       {
         type: "italic",
@@ -162,19 +162,19 @@ describe("replaceItalic", () => {
 describe("replaceCode", () => {
   it("should do nothing if no code", () => {
     const lines = makeLines(["test"]);
-    const actions = renderer.replaceCode(0, lines[0]);
+    const actions = parser.replaceCode(0, lines[0]);
     expect(actions).toEqual([]);
   });
 
   it("should not replace empty tags", () => {
     const lines = makeLines(["``"]);
-    const actions = renderer.replaceCodeBlock(lines);
+    const actions = parser.replaceCodeBlock(lines);
     expect(actions).toEqual([]);
   });
 
   it("should replace code", () => {
     const lines = makeLines(["plain `code` plain"]);
-    const actions = renderer.replaceCode(0, lines[0]);
+    const actions = parser.replaceCode(0, lines[0]);
     expect(actions).toEqual([
       {
         type: "code",
@@ -187,7 +187,7 @@ describe("replaceCode", () => {
 
   it("should replace multiple code", () => {
     const lines = makeLines(["plain `code` plain `code2`"]);
-    const actions = renderer.replaceCode(1, lines[0]);
+    const actions = parser.replaceCode(1, lines[0]);
     expect(actions).toEqual([
       {
         type: "code",
@@ -208,7 +208,7 @@ describe("replaceCode", () => {
 describe("replaceInlineMarkdown", () => {
   it("should replace mixed markdown", () => {
     const lines = makeLines(["plain `code` **bold** *italic*"]);
-    const actions = renderer.replaceInlineMarkdown(2, lines[0]);
+    const actions = parser.replaceInlineMarkdown(2, lines[0]);
     expect(actions).toEqual([
       {
         type: "code",
@@ -241,7 +241,7 @@ describe("replaceMarkdown", () => {
       "```",
       "*italic*",
     ]);
-    const actions = renderer.renderMarkdown(lines);
+    const actions = parser.parseMarkdown(lines);
 
     expect(actions).toEqual([
       {
@@ -276,7 +276,7 @@ describe("replaceMarkdown", () => {
   it("should not replace format inside codeblock", () => {
     const lines = makeLines(["```", "**bold**", "```"]);
 
-    const actions = renderer.renderMarkdown(lines);
+    const actions = parser.parseMarkdown(lines);
     expect(actions).toEqual([
       {
         type: "codeblock",
