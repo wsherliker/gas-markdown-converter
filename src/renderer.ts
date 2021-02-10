@@ -1,6 +1,6 @@
 type CodeBlockAction = {
   type: "codeblock";
-  startLine: number;
+  line: number;
   numOfLines: number;
 };
 
@@ -39,7 +39,7 @@ function replaceCodeBlock(lines: LineData[]): CodeBlockAction[] {
         if (lines[j].raw.trim() == "```") {
           actions.push({
             type: "codeblock",
-            startLine: i,
+            line: i,
             numOfLines: j - i + 1,
           });
 
@@ -64,7 +64,6 @@ function replaceCodeBlock(lines: LineData[]): CodeBlockAction[] {
 }
 
 function matchAll(regex: RegExp, str: string) {
-
   const matches = [];
   let m: RegExpExecArray;
 
@@ -76,8 +75,8 @@ function matchAll(regex: RegExp, str: string) {
 }
 
 function replaceBold(index: number, line: LineData): InlineAction[] {
-  return matchAll(/\*\*(?:.*?)\*\*/g, line.raw).map(m => ({
-    type: 'bold',
+  return matchAll(/\*\*(?:[^*]+?)\*\*/g, line.raw).map((m) => ({
+    type: "bold",
     line: index,
     startPos: m.index,
     length: m[0].length,
@@ -85,8 +84,8 @@ function replaceBold(index: number, line: LineData): InlineAction[] {
 }
 
 function replaceItalic(index: number, line: LineData): InlineAction[] {
-  return matchAll(/\*(?:.*?)\*/g, line.raw).map(m => ({
-    type: 'italic',
+  return matchAll(/(?<!\*)\*(?:[^*]+?)\*(?!\*)/g, line.raw).map((m) => ({
+    type: "italic",
     line: index,
     startPos: m.index,
     length: m[0].length,
@@ -94,8 +93,8 @@ function replaceItalic(index: number, line: LineData): InlineAction[] {
 }
 
 function replaceCode(index: number, line: LineData): InlineAction[] {
-  return matchAll(/`(?:.*?)`/g, line.raw).map(m => ({
-    type: 'code',
+  return matchAll(/`(?:[^`]+?)`/g, line.raw).map((m) => ({
+    type: "code",
     line: index,
     startPos: m.index,
     length: m[0].length,
@@ -103,10 +102,13 @@ function replaceCode(index: number, line: LineData): InlineAction[] {
 }
 
 function replaceInlineMarkdown(index: number, line: LineData): InlineAction[] {
-  let actions = [];
-  actions = actions.concat(replaceBold(index, line));
-  actions = actions.concat(replaceItalic(index, line));
-  actions = actions.concat(replaceCode(index, line));
+  const actions = [
+    ...replaceBold(index, line),
+    ...replaceItalic(index, line),
+    ...replaceCode(index, line),
+  ];
+  actions.sort((a, b) => a.startPos - b.startPos);
+  console.log(actions);
   return actions;
 }
 
@@ -121,7 +123,7 @@ function renderMarkdown(lines: Array<LineData>) {
     // Skip line if line[i] is already converted to a code block
     if (
       codeBlockActions.some(
-        (cba) => cba.startLine <= i && i < cba.startLine + cba.numOfLines
+        (cba) => cba.line <= i && i < cba.line + cba.numOfLines
       )
     ) {
       continue;
@@ -130,6 +132,9 @@ function renderMarkdown(lines: Array<LineData>) {
     const inlineActions = replaceInlineMarkdown(i, lines[i]);
     actions = actions.concat(inlineActions);
   }
+  
+  actions.sort((a, b) => a.line - b.line);
+  return actions;
 }
 
 // exports are only for unit tests
@@ -139,4 +144,5 @@ export default {
   replaceCode,
   replaceInlineMarkdown,
   replaceCodeBlock,
+  renderMarkdown,
 };

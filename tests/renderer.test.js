@@ -11,9 +11,7 @@ const makeLines = (text) => {
 describe("replaceCodeBlock", () => {
   it("should do nothing when code block does not exist", () => {
     const lines = makeLines(["abcd", "abcd"]);
-
     const actions = renderer.replaceCodeBlock(lines);
-
     expect(actions).toEqual([]);
   });
 
@@ -25,7 +23,7 @@ describe("replaceCodeBlock", () => {
     expect(actions).toEqual([
       {
         type: "codeblock",
-        startLine: 0,
+        line: 0,
         numOfLines: 3,
       },
     ]);
@@ -50,12 +48,12 @@ describe("replaceCodeBlock", () => {
     expect(actions).toEqual([
       {
         type: "codeblock",
-        startLine: 1,
+        line: 1,
         numOfLines: 3,
       },
       {
         type: "codeblock",
-        startLine: 5,
+        line: 5,
         numOfLines: 4,
       },
     ]);
@@ -73,6 +71,12 @@ describe("replaceBold", () => {
   it("should do nothing if no bold", () => {
     const lines = makeLines(["test"]);
     const actions = renderer.replaceBold(0, lines[0]);
+    expect(actions).toEqual([]);
+  });
+
+  it("should not replace empty tags", () => {
+    const lines = makeLines(["****"]);
+    const actions = renderer.replaceCodeBlock(lines);
     expect(actions).toEqual([]);
   });
 
@@ -116,6 +120,12 @@ describe("replaceItalic", () => {
     expect(actions).toEqual([]);
   });
 
+  it("should not replace empty tags", () => {
+    const lines = makeLines(["**"]);
+    const actions = renderer.replaceCodeBlock(lines);
+    expect(actions).toEqual([]);
+  });
+
   it("should replace italic", () => {
     const lines = makeLines(["plain *italic* plain"]);
     const actions = renderer.replaceItalic(0, lines[0]);
@@ -156,6 +166,12 @@ describe("replaceCode", () => {
     expect(actions).toEqual([]);
   });
 
+  it("should not replace empty tags", () => {
+    const lines = makeLines(["``"]);
+    const actions = renderer.replaceCodeBlock(lines);
+    expect(actions).toEqual([]);
+  });
+
   it("should replace code", () => {
     const lines = makeLines(["plain `code` plain"]);
     const actions = renderer.replaceCode(0, lines[0]);
@@ -184,6 +200,88 @@ describe("replaceCode", () => {
         line: 1,
         startPos: 19,
         length: 7,
+      },
+    ]);
+  });
+});
+
+describe("replaceInlineMarkdown", () => {
+  it("should replace mixed markdown", () => {
+    const lines = makeLines(["plain `code` **bold** *italic*"]);
+    const actions = renderer.replaceInlineMarkdown(2, lines[0]);
+    expect(actions).toEqual([
+      {
+        type: "code",
+        line: 2,
+        startPos: 6,
+        length: 6,
+      },
+      {
+        type: "bold",
+        line: 2,
+        startPos: 13,
+        length: 8,
+      },
+      {
+        type: "italic",
+        line: 2,
+        startPos: 22,
+        length: 8,
+      },
+    ]);
+  });
+});
+
+describe("replaceMarkdown", () => {
+  it("should replace both code blocks and mixed markdown", () => {
+    const lines = makeLines([
+      "plain **bold** `code`",
+      "```",
+      "code block",
+      "```",
+      "*italic*",
+    ]);
+    const actions = renderer.renderMarkdown(lines);
+
+    expect(actions).toEqual([
+      {
+        type: "bold",
+        line: 0,
+        startPos: 6,
+        length: 8,
+      },
+
+      {
+        type: "code",
+        line: 0,
+        startPos: 15,
+        length: 6,
+      },
+
+      {
+        type: "codeblock",
+        line: 1,
+        numOfLines: 3,
+      },
+
+      {
+        type: "italic",
+        line: 4,
+        startPos: 0,
+        length: 8,
+      },
+    ]);
+  });
+
+  it("should not replace format inside codeblock", () => {
+    const lines = makeLines(["```", "**bold**", "```"]);
+
+    const actions = renderer.renderMarkdown(lines);
+    expect(actions).toEqual([
+      {
+        type: "codeblock",
+        line: 0,
+        numOfLines: 3,
       },
     ]);
   });
