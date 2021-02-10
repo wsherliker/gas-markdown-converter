@@ -1,6 +1,7 @@
 *.sw*
 .vscode/
 node_modules/
+.clasp.json
 
 // Ignore GAS compiled js file
 src/*.js
