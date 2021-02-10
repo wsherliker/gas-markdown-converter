@@ -1,7 +1,7 @@
-Markdown Converter: A Google Docs Add-on to convert Markdown syntax
-===================================================================
+Markdown Converter
+===================
 
-Markdown Converter is a simple Google Docs add-on. It does only one thing: converting Markdown syntax in selected content to Google Docs styles.
+[Markdown Converter](https://intelliavant.com/product/markdown-converter/) is a simple Google Docs add-on. It does only one thing: converting Markdown syntax in selected content to Google Docs styles.
 
 ## Background
 
@@ -40,7 +40,7 @@ Go back to your cloned repo and create a `.clasp.json` in the root. Replace the 
 
 ```
 {
-  "scriptId":"<your_script_idd>",
+  "scriptId":"<your_script_id>",
   "rootDir": "src/",
   "fileExtension": "ts"
 }
