@@ -1,8 +1,8 @@
 {
   "name": "gas-markdown-converter",
   "version": "1.0.0",
-  "description": "",
-  "main": "markdown.js",
+  "description": "A simple Google Docs addon that converts markdown syntax to Google Docs native styles.",
+  "main": "markdown.ts",
   "scripts": {
     "test": "jest"
   },
@@ -10,8 +10,8 @@
     "type": "git",
     "url": "git+https://github.com/intelliavant/gas-markdown-converter.git"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "Charlee Li <admin@intelliavant.com>",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/intelliavant/gas-markdown-converter/issues"
   },
@@ -22,11 +22,9 @@
     "@babel/preset-typescript": "^7.12.13",
     "@types/google-apps-script": "^1.0.22",
     "@types/jest": "^26.0.20",
-    "@types/marked": "^1.2.2",
     "babel-test": "^0.2.4",
     "jest": "^26.6.3"
   },
   "dependencies": {
-    "marked": "^2.0.0"
   }
 }
