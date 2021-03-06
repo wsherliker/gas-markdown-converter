@@ -9,8 +9,9 @@
  */
 
 type Preference = {
-  codeblockUseTable?: boolean;
-}
+  codeblockUseTable: boolean;
+  codeblockDarkMode: boolean;
+};
 
 /**
  * Creates a menu entry in the Google Docs UI when the document is opened.
@@ -58,7 +59,10 @@ function onInstall(e) {
 function getPreferences(): Preference {
   const userProperties = PropertiesService.getUserProperties();
   return {
-    codeblockUseTable: userProperties.getProperty("codeblockUseTable") === 'true',
+    codeblockUseTable:
+      userProperties.getProperty("codeblockUseTable") === "true",
+    codeblockDarkMode:
+      userProperties.getProperty("codeblockDarkMode") === "true",
   };
 }
 
@@ -69,13 +73,11 @@ function getPreferences(): Preference {
  * @return {Array.<string>} The selected text.
  */
 function convertSelectedText(prefs: Preference) {
+  const { codeblockUseTable, codeblockDarkMode } = prefs;
 
-  const { codeblockUseTable } = prefs;
-
-  PropertiesService.getUserProperties().setProperty(
-    "codeblockUseTable",
-    codeblockUseTable ? 'true' : ''
-  );
+  PropertiesService.getUserProperties()
+    .setProperty("codeblockUseTable", codeblockUseTable ? "true" : "")
+    .setProperty("codeblockDarkMode", codeblockDarkMode ? "true" : "");
 
   const selection = DocumentApp.getActiveDocument().getSelection();
   if (selection) {

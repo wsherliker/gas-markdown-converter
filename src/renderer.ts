@@ -6,6 +6,7 @@ type DocsLineData = {
 
 type Preference = {
   codeblockUseTable?: boolean;
+  codeblockDarkMode: boolean;
 };
 
 function getParagraph(element: GoogleAppsScript.Document.Element) {
@@ -17,7 +18,8 @@ function getParagraph(element: GoogleAppsScript.Document.Element) {
 
 function renderCodeBlock(
   elements: GoogleAppsScript.Document.RangeElement[],
-  codeblockUseTable: boolean
+  useTable: boolean,
+  darkMode: boolean
 ) {
   const paragraph = getParagraph(elements[0].getElement());
   if (!paragraph) {
@@ -27,7 +29,7 @@ function renderCodeBlock(
   const body: GoogleAppsScript.Document.Body = paragraph.getParent().asBody();
   const pos = body.getChildIndex(paragraph);
 
-  if (codeblockUseTable) {
+  if (useTable) {
     // remove paragraph
     elements.forEach((e) => e.getElement().removeFromParent());
 
@@ -41,24 +43,36 @@ function renderCodeBlock(
     // create table content
     elements.slice(1, -1).forEach((e) => {
       const text = e.getElement().asText();
-      const paragraph = getParagraph(e.getElement());
       text.setFontFamily("Roboto Mono");
       text.setFontSize(9);
+
+      if (darkMode) {
+        text.setForegroundColor("#eeeeee");
+      }
+
+      const paragraph = getParagraph(e.getElement());
       cell.appendParagraph(paragraph);
     });
 
     // set table style
-    table.setBorderColor("#d0d0d0");
-    cell.setBackgroundColor("#f3f3f3");
+    if (darkMode) {
+      table.setBorderColor("#666666");
+      cell.setBackgroundColor("#666666");
+    } else {
+      table.setBorderColor("#d0d0d0");
+      cell.setBackgroundColor("#f3f3f3");
+    }
+
 
   } else {
+    // without table, simply change the font style
     elements.forEach((e) => {
       const text = e.getElement().asText();
-      const paragraph = getParagraph(e.getElement());
       text.setFontFamily("Roboto Mono");
       text.setFontSize(9);
     });
 
+    // remove tags
     elements[0].getElement().removeFromParent();
     elements[elements.length - 1].getElement().removeFromParent();
   }
@@ -129,7 +143,7 @@ function renderMarkdown(
   elements: GoogleAppsScript.Document.RangeElement[],
   prefs: Preference
 ) {
-  const { codeblockUseTable } = prefs;
+  const { codeblockUseTable, codeblockDarkMode } = prefs;
 
   const lines = elements.map((e) => getTextToProcess(e));
   const actions = parseMarkdown(lines);
@@ -139,7 +153,8 @@ function renderMarkdown(
       case "codeblock":
         renderCodeBlock(
           elements.slice(action.line, action.line + action.numOfLines),
-          codeblockUseTable
+          codeblockUseTable,
+          codeblockDarkMode
         );
         break;
 

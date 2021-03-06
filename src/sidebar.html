@@ -39,6 +39,13 @@
       .width-100 {
         width: 100%;
       }
+      .option {
+        font-size: 16px;
+      }
+
+      .option input[type="checkbox"] {
+        transform: scale(1.2);
+      }
       pre {
         marign-left: 16px;
       }
@@ -96,14 +103,27 @@ code block
       <form>
         <div style="margin-bottom: 24px">
           <h3>Preferences</h3>
-          <input
-            type="checkbox"
-            id="codeblock-use-table"
-            name="codeblock-use-table"
-            value="codeblock-use-table"
-            checked
-          />
-          <label for="codeblock-use-table">Use single-cell table to show code block</label>
+          <div class="option">
+            <input
+              type="checkbox"
+              id="codeblock-use-table"
+              name="codeblock-use-table"
+              value="codeblock-use-table"
+              checked
+            />
+            <label for="codeblock-use-table">Show background for code blocks</label>
+          </div>
+
+          <div class="option" style="margin-left: 16px">
+            <input
+              type="checkbox"
+              id="codeblock-dark-mode"
+              name="codeblock-dark-mode"
+              value="codeblock-dark-mode"
+              checked
+            />
+            <label for="codeblock-dark-mode">Dark mode</label>
+          </div>
         </div>
         <div class="block" id="button-bar">
           <button id="convert" class="blue">Convert</button>
@@ -113,8 +133,27 @@ code block
 
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
     <script>
+      function setCheckboxChecked(id, checked) {
+        $("#" + id).attr("checked", checked ? "checked" : false);
+      }
+
+      function setCheckboxEnabled(id, enabled) {
+        $("#" + id).attr("disabled", !enabled);
+      }
+
+      function isCheckboxChecked(id) {
+        return $("#" + id).is(":checked");
+      }
+
       $(function () {
         $("#convert").click(convertSelectedText);
+
+        // disable dark mode if use table not checked
+        $("#codeblock-use-table").change(() => {
+          const useTable = isCheckboxChecked('codeblock-use-table');
+          setCheckboxEnabled('codeblock-dark-mode', useTable);
+        });
+
         google.script.run
           .withSuccessHandler(loadPreferences)
           .withFailureHandler(showError)
@@ -123,11 +162,24 @@ code block
 
       function loadPreferences(prefs) {
         // default to true
-        const codeblockUseTable = prefs.codeblockUseTable === null ? true : prefs.codeblockUseTable;
-        $('input:checkbox[name="codeblock-use-table"]').attr(
-          "checked",
-          codeblockUseTable ? 'checked' : false
-        );
+        const codeblockUseTable =
+          prefs.codeblockUseTable === null ? true : prefs.codeblockUseTable;
+        const codeblockDarkMode = !!prefs.codeblockDarkMode;
+
+        setCheckboxChecked('codeblock-use-table', codeblockUseTable);
+        setCheckboxChecked('codeblock-dark-mode', codeblockDarkMode);
+
+        // disable dark mode if use table not checked
+        if (!codeblockUseTable) {
+          setCheckboxEnabled('codeblock-dark-mode', false);
+        }
+      }
+
+      function getPreferenceFromUI() {
+        return {
+          codeblockUseTable: isCheckboxChecked('codeblock-use-table'),
+          codeblockDarkMode: isCheckboxChecked('codeblock-dark-mode'),
+        };
       }
 
       /**
@@ -135,25 +187,24 @@ code block
        * the sidebar UI with the resulting translation.
        */
       function convertSelectedText() {
-        const codeblockUseTableElem = $('input[name="codeblock-use-table"]');
-        const codeblockUseTable = codeblockUseTableElem.is(':checked');
+        const { codeblockUseTable, codeblockDarkMode } = getPreferenceFromUI();
 
         this.disabled = true;
-        codeblockUseTableElem.disabled = true;
+        setCheckboxEnabled('codeblock-use-table', false);
         $("#error").remove();
 
         google.script.run
           .withSuccessHandler(function (textAndTranslation, element) {
-            codeblockUseTableElem.disabled = false;
+            setCheckboxEnabled('codeblock-use-table', true);
             element.disabled = false;
           })
           .withFailureHandler(function (msg, element) {
             showError(msg, $("#button-bar"));
-            codeblockUseTableElem.disabled = false;
+            setCheckboxEnabled('codeblock-use-table', true);
             element.disabled = false;
           })
           .withUserObject(this)
-          .convertSelectedText({ codeblockUseTable });
+          .convertSelectedText({ codeblockUseTable, codeblockDarkMode });
       }
 
       /**
