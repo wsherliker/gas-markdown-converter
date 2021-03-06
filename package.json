@@ -1,6 +1,6 @@
 {
   "name": "gas-markdown-converter",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "A simple Google Docs addon that converts markdown syntax to Google Docs native styles.",
   "main": "markdown.ts",
   "scripts": {
