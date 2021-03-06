@@ -1,55 +1,76 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <base target="_top">
-    <link rel="stylesheet" href="https://ssl.gstatic.com/docs/script/css/add-ons1.css">
-    <link rel="preconnect" href="https://fonts.gstatic.com">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap" rel="stylesheet">
+    <base target="_top" />
+    <link
+      rel="stylesheet"
+      href="https://ssl.gstatic.com/docs/script/css/add-ons1.css"
+    />
+    <link rel="preconnect" href="https://fonts.gstatic.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap"
+      rel="stylesheet"
+    />
     <!-- The CSS package above applies Google styling to buttons and other elements. -->
 
     <style>
-    .branding-below {
-      bottom: 56px;
-      top: 0;
-    }
-    .branding-text {
-      left: 7px;
-      position: relative;
-      top: 3px;
-    }
-    .col-contain {
-      overflow: hidden;
-    }
-    .col-one {
-      float: left;
-      width: 50%;
-    }
-    .logo {
-      vertical-align: middle;
-    }
-    .radio-spacer {
-      height: 20px;
-    }
-    .width-100 {
-      width: 100%;
-    }
-    pre {
-      marign-left: 16px;
-    }
+      .branding-below {
+        bottom: 56px;
+        top: 0;
+      }
+      .branding-text {
+        left: 7px;
+        position: relative;
+        top: 3px;
+      }
+      .col-contain {
+        overflow: hidden;
+      }
+      .col-one {
+        float: left;
+        width: 50%;
+      }
+      .logo {
+        vertical-align: middle;
+      }
+      .radio-spacer {
+        height: 20px;
+      }
+      .width-100 {
+        width: 100%;
+      }
+      pre {
+        marign-left: 16px;
+      }
     </style>
   </head>
   <body>
     <div class="sidebar branding-below">
       <h1>Markdown Converter</h1>
-      <p>Please select some texts and click the "Convert" button. It will convert the following Markdown syntax:</p>
+      <p>
+        Please select some texts and click the "Convert" button. It will convert
+        the following Markdown syntax:
+      </p>
       <ul>
         <li>**bold** => <strong>bold</strong></li>
         <li>*italic* => <i>italic</i></li>
-        <li>`monospace` => <span style="background-color: #f3f3f3; color: #cc0000; font-family: 'Roboto Mono'">monospace</span>
+        <li>
+          `monospace` =>
+          <span
+            style="
+              background-color: #f3f3f3;
+              color: #cc0000;
+              font-family: 'Roboto Mono';
+            "
+            >monospace</span
+          >
+        </li>
       </ul>
 
       <p>
-      Also, a code block marked with ``` will be converted to a pre-like table.</p>
+        Also, a code block marked with ``` will be converted to a pre-like
+        table.
+      </p>
       <pre>
 ```
 code block
@@ -60,17 +81,30 @@ code block
       <table style="border-collapse: collapse; border: solid 1px #d0d0d0">
         <tr>
           <td style="background-color: #f3f3f3">
-            <div style="font-family: 'Roboto Mono'; font-size: 9pt; padding: 4px">
-              code block<br/>
+            <div
+              style="font-family: 'Roboto Mono'; font-size: 9pt; padding: 4px"
+            >
+              code block<br />
               code block
             </div>
           </td>
         </tr>
       </table>
 
-      <hr>
- 
+      <hr />
+
       <form>
+        <div style="margin-bottom: 24px">
+          <h3>Preferences</h3>
+          <input
+            type="checkbox"
+            id="codeblock-use-table"
+            name="codeblock-use-table"
+            value="codeblock-use-table"
+            checked
+          />
+          <label for="codeblock-use-table">Use single-cell table to show code block</label>
+        </div>
         <div class="block" id="button-bar">
           <button id="convert" class="blue">Convert</button>
         </div>
@@ -79,32 +113,47 @@ code block
 
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
     <script>
-      $(function() {
-        $('#convert').click(convertSelectedText);
+      $(function () {
+        $("#convert").click(convertSelectedText);
+        google.script.run
+          .withSuccessHandler(loadPreferences)
+          .withFailureHandler(showError)
+          .getPreferences();
       });
+
+      function loadPreferences(prefs) {
+        // default to true
+        const codeblockUseTable = prefs.codeblockUseTable === null ? true : prefs.codeblockUseTable;
+        $('input:checkbox[name="codeblock-use-table"]').attr(
+          "checked",
+          codeblockUseTable ? 'checked' : false
+        );
+      }
 
       /**
        * Runs a server-side function to translate the user-selected text and update
        * the sidebar UI with the resulting translation.
        */
       function convertSelectedText() {
+        const codeblockUseTableElem = $('input[name="codeblock-use-table"]');
+        const codeblockUseTable = codeblockUseTableElem.is(':checked');
+
         this.disabled = true;
-        $('#error').remove();
-        var origin = $('input[name=origin]:checked').val();
-        var dest = $('input[name=dest]:checked').val();
-        var savePrefs = $('#save-prefs').is(':checked');
+        codeblockUseTableElem.disabled = true;
+        $("#error").remove();
+
         google.script.run
-            .withSuccessHandler(
-              function(textAndTranslation, element) {
-                element.disabled = false;
-              })
-            .withFailureHandler(
-              function(msg, element) {
-                showError(msg, $('#button-bar'));
-                element.disabled = false;
-              })
-            .withUserObject(this)
-            .convertSelectedText(origin);
+          .withSuccessHandler(function (textAndTranslation, element) {
+            codeblockUseTableElem.disabled = false;
+            element.disabled = false;
+          })
+          .withFailureHandler(function (msg, element) {
+            showError(msg, $("#button-bar"));
+            codeblockUseTableElem.disabled = false;
+            element.disabled = false;
+          })
+          .withUserObject(this)
+          .convertSelectedText({ codeblockUseTable });
       }
 
       /**
@@ -114,7 +163,7 @@ code block
        * @param {DOMElement} element The element after which to display the error.
        */
       function showError(msg, element) {
-        var div = $('<div id="error" class="error">' + msg + '</div>');
+        var div = $('<div id="error" class="error">' + msg + "</div>");
         $(element).after(div);
       }
     </script>

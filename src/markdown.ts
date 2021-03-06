@@ -8,6 +8,10 @@
  * presented to users will reflect this limited scope.
  */
 
+type Preference = {
+  codeblockUseTable?: boolean;
+}
+
 /**
  * Creates a menu entry in the Google Docs UI when the document is opened.
  * This method is only used by the regular add-on, and is never called by
@@ -18,9 +22,10 @@
  *     running in, inspect e.authMode.
  */
 function onOpen(e) {
-  DocumentApp.getUi().createAddonMenu()
-      .addItem('Start', 'showSidebar')
-      .addToUi();
+  DocumentApp.getUi()
+    .createAddonMenu()
+    .addItem("Start", "showSidebar")
+    .addToUi();
 }
 
 /**
@@ -29,8 +34,9 @@ function onOpen(e) {
  * the mobile add-on version.
  */
 function showSidebar() {
-  var ui = HtmlService.createHtmlOutputFromFile('sidebar')
-      .setTitle('Markdown Converter');
+  var ui = HtmlService.createHtmlOutputFromFile("sidebar").setTitle(
+    "Markdown Converter"
+  );
   DocumentApp.getUi().showSidebar(ui);
 }
 
@@ -49,13 +55,28 @@ function onInstall(e) {
   onOpen(e);
 }
 
+function getPreferences(): Preference {
+  const userProperties = PropertiesService.getUserProperties();
+  return {
+    codeblockUseTable: userProperties.getProperty("codeblockUseTable") === 'true',
+  };
+}
+
 /**
  * Gets the text the user has selected. If there is no selection,
  * this function displays an error message.
  *
  * @return {Array.<string>} The selected text.
  */
-function convertSelectedText() {
+function convertSelectedText(prefs: Preference) {
+
+  const { codeblockUseTable } = prefs;
+
+  PropertiesService.getUserProperties().setProperty(
+    "codeblockUseTable",
+    codeblockUseTable ? 'true' : ''
+  );
+
   const selection = DocumentApp.getActiveDocument().getSelection();
   if (selection) {
     const elements = selection.getRangeElements();
@@ -63,4 +84,3 @@ function convertSelectedText() {
   }
   return [];
 }
-
