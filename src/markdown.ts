@@ -80,7 +80,7 @@ function convertSelectedText(prefs: Preference) {
   const selection = DocumentApp.getActiveDocument().getSelection();
   if (selection) {
     const elements = selection.getRangeElements();
-    renderMarkdown(elements);
+    renderMarkdown(elements, prefs);
   }
   return [];
 }
