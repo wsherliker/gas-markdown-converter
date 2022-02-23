@@ -184,8 +184,7 @@ code block
       }
 
       /**
-       * Runs a server-side function to translate the user-selected text and update
-       * the sidebar UI with the resulting translation.
+       * Runs a server-side function to translate the user-selected text
        */
       function convertSelectedText() {
         const { codeblockUseTable, codeblockDarkMode } = getPreferenceFromUI();
@@ -206,6 +205,30 @@ code block
           })
           .withUserObject(this)
           .convertSelectedText({ codeblockUseTable, codeblockDarkMode });
+      }
+
+	  /**
+       * Runs a server-side function to translate all the documents text.
+       */
+	   function convertSelectedText() {
+        const { codeblockUseTable, codeblockDarkMode } = getPreferenceFromUI();
+
+        this.disabled = true;
+        setCheckboxEnabled('codeblock-use-table', false);
+        $("#error").remove();
+
+        google.script.run
+          .withSuccessHandler(function (textAndTranslation, element) {
+            setCheckboxEnabled('codeblock-use-table', true);
+            element.disabled = false;
+          })
+          .withFailureHandler(function (msg, element) {
+            showError(msg, $("#button-bar"));
+            setCheckboxEnabled('codeblock-use-table', true);
+            element.disabled = false;
+          })
+          .withUserObject(this)
+          .convertAllText({ codeblockUseTable, codeblockDarkMode });
       }
 
       /**
