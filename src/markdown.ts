@@ -100,11 +100,15 @@ function convertAllText(prefs: Preference) {
 
 	const body = DocumentApp.getActiveDocument().getBody();
 	var elementCount = body.getNumChildren();
-	var elements = [];
-	for(var i = 0; i < elementCount; i++) {
-		elements.push(body.getChild(i));
+	var loops = Math.ceil(elementCount / 100);
+	for (var j = 0; j < loops; j++) {
+		var elements = [];
+		var max = Math.min(elementCount, (j + 1) * 100);
+		for(var i = (j * 100) + 0; i < max; i++) {
+			elements.push(body.getChild(i));
+		}
+		renderMarkdown(elements, prefs);
 	}
-	renderMarkdown(elements, prefs);
 
 	return [];
 }
