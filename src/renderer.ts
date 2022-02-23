@@ -98,7 +98,7 @@ function renderList(
 		var para = getParagraph(e.getElement());
 		var txt = para.editAsText();
 		if (txt.length < 2) { continue; }
-		txt = txt.substr(2);
+		txt = txt.substring(2);
 		body.insertListItem(pos + 1, txt);
 	}
 }
