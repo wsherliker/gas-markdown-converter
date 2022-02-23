@@ -87,3 +87,22 @@ function convertSelectedText(prefs: Preference) {
 	}
 	return [];
 }
+
+function convertAllText(prefs: Preference) {
+	if (!prefs) { prefs = { codeblockUseTable: false, codeblockDarkMode: false }; }
+	const { codeblockUseTable, codeblockDarkMode } = prefs;
+
+	PropertiesService.getUserProperties()
+		.setProperty("codeblockUseTable", codeblockUseTable ? "true" : "")
+		.setProperty("codeblockDarkMode", codeblockDarkMode ? "true" : "");
+
+	const body = DocumentApp.getActiveDocument().getBody();
+	var elementCount = body.getNumChildren();
+	var elements = [];
+	for(var i = 0; i < elementCount; i++) {
+		elements.push(body.getChild(i));
+	}
+	renderMarkdown(elements, prefs);
+
+	return [];
+}
