@@ -25,7 +25,10 @@ function replaceCodeBlock(lines: LineData[]): CodeBlockAction[] {
   let i = 0;
   while (i < lines.length) {
     const line = lines[i];
-
+	if (!line) {
+		i++;
+		continue;
+	}
     // skip partial lines
     if (line.startIndex > 0) {
       i++;
