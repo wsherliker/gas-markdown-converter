@@ -90,13 +90,18 @@ function renderList(
 	const body: GoogleAppsScript.Document.Body = paragraph.getParent().asBody();
 	const pos = body.getChildIndex(paragraph);
 
-	// set the list id
-	elements.forEach((e) => {
+	// remove paragraphs
+	elements.forEach((e) => e.getElement().removeFromParent());
+
+	// insert list items
+	for(var i = elements.length - 1; i >= 0; i--) {
+		var element = elements[i];
 		var para = getParagraph(e.getElement());
-		para.setListId(1);
-		var atts = para.getAttributes();
-		para.editAsText().deleteText(0, 2);
-	});
+		var txt = para.editAsText();
+		if (txt.length < 2) { continue; }
+		txt = txt.substr(2);
+		body.insertListItem(pos + 1, txt);
+	}
 }
 
 function renderBold(
