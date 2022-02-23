@@ -1,11 +1,11 @@
 export type CodeBlockAction = {
-  type: "codeblock";
+  type: "codeblock" | "list";
   line: number;
   numOfLines: number;
 };
 
 export type InlineAction = {
-  type: "bold" | "italic" | "code" | "rightalign";
+  type: "bold" | "italic" | "code" | "rightalign" | "centeralign" | "heading1" | "heading2" | "heading3";
   line: number;
   startPos: number;
   length: number;
@@ -58,6 +58,30 @@ function replaceCodeBlock(lines: LineData[]): CodeBlockAction[] {
       }
     }
 
+	if (line.raw.substr(0,1) == "-") {
+		let j = i + 1;
+		while (j < lines.length) {
+		  // Found end tag, return action
+		  if (line.raw.substr(0,1) != "-") {
+			actions.push({
+			  type: "list",
+			  line: i,
+			  numOfLines: j - i,
+			});
+
+			// continue searching for next code block from next line
+			i = j + 1;
+			break;
+		  }
+
+		  j++;
+		}
+
+		// if end tag not found, then no need to search for other start tags
+		if (j >= lines.length) {
+		  break;
+		}
+	  }
     i++;
   }
 
@@ -203,6 +227,23 @@ function replaceCode(raw: string) {
   const masked = maskInlineActions(actions, raw);
   return { actions, masked };
 }
+
+
+//function replaceList(raw: string) {
+//    const matches = matchAll(/(-(.*))(\n-(.*))*/g, raw);
+//    const actions = matches.map(
+//	  (m) =>
+//		({
+//		  type: "list",
+//		  line: 0,
+//		  startPos: m.index,
+//		  length: m[0].length,
+//		} as InlineAction)
+//	);
+//
+//	const masked = maskInlineActions(actions, raw);
+//	return { actions, masked };
+//}
 
 /**
  * Pipeline given replace functions. Since the replace function has two output: `actions` and `masked`,

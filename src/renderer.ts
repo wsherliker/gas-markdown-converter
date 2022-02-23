@@ -78,6 +78,27 @@ function renderCodeBlock(
 	}
 }
 
+
+function renderList(
+	elements: GoogleAppsScript.Document.RangeElement[]
+) {
+	const paragraph = getParagraph(elements[0].getElement());
+	if (!paragraph) {
+		return;
+	}
+
+	const body: GoogleAppsScript.Document.Body = paragraph.getParent().asBody();
+	const pos = body.getChildIndex(paragraph);
+
+	// set the list id
+	elements.forEach((e) => {
+		var para = getParagraph(e.getElement());
+		para.setListId(1);
+		var atts = para.getAttributes();
+		para.editAsText().deleteText(0, 2);
+	});
+}
+
 function renderBold(
 	element: GoogleAppsScript.Document.RangeElement,
 	startPos: number,
@@ -122,11 +143,12 @@ function renderHeading(
 	element: GoogleAppsScript.Document.RangeElement,
 	startPos: number,
 	length: number,
-	heading: DocumentApp.ParagraphHeading
+	heading: DocumentApp.ParagraphHeading,
+	chars: number
 ) {
 	const text = getTextToProcess(element).text;
 	const start = startPos;
-	text.deleteText(start, start);
+	text.deleteText(start, start + chars - 1);
 
 	const para = getParagraph(element.getElement());
 	para.setHeading(heading);
@@ -198,6 +220,12 @@ function renderMarkdown(
 				);
 				break;
 
+			case "list":
+				renderList(
+					elements.slice(action.line, action.line + action.numOfLines)
+				);
+				break;
+
 			case "bold":
 				renderBold(elements[action.line], action.startPos, action.length);
 				break;
@@ -219,15 +247,15 @@ function renderMarkdown(
 				break;
 
 			case 'heading1':
-				renderHeading(elements[action.line], action.startPos, action.length, DocumentApp.ParagraphHeading.HEADING1);
+				renderHeading(elements[action.line], action.startPos, action.length, DocumentApp.ParagraphHeading.HEADING1, 1);
 				break;
 
 			case 'heading2':
-				renderHeading(elements[action.line], action.startPos, action.length, DocumentApp.ParagraphHeading.HEADING2);
+				renderHeading(elements[action.line], action.startPos, action.length, DocumentApp.ParagraphHeading.HEADING2, 2);
 				break;
 
 			case 'heading3':
-				renderHeading(elements[action.line], action.startPos, action.length, DocumentApp.ParagraphHeading.HEADING3);
+				renderHeading(elements[action.line], action.startPos, action.length, DocumentApp.ParagraphHeading.HEADING3, 3);
 				break;
 
 			default:
