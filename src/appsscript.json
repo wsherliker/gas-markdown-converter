@@ -5,5 +5,9 @@
     ]
   },
   "exceptionLogging": "STACKDRIVER",
-  "runtimeVersion": "V8"
+  "runtimeVersion": "V8",
+  "oauthScopes": [
+    "https://www.googleapis.com/auth/script.container.ui",
+    "https://www.googleapis.com/auth/documents"
+  ]
 }

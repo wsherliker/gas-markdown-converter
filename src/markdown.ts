@@ -98,16 +98,21 @@ function convertAllText(prefs: Preference) {
 		.setProperty("codeblockUseTable", codeblockUseTable ? "true" : "")
 		.setProperty("codeblockDarkMode", codeblockDarkMode ? "true" : "");
 
-	const body = DocumentApp.getActiveDocument().getBody();
+	var window = 5000;
+	var body = DocumentApp.getActiveDocument().getBody();
 	var elementCount = body.getNumChildren();
-	var loops = Math.ceil(elementCount / 100);
+	var loops = Math.ceil(elementCount / window);
 	for (var j = 0; j < loops; j++) {
 		var elements = [];
-		var max = Math.min(elementCount, (j + 1) * 100);
-		for(var i = (j * 100) + 0; i < max; i++) {
+		var max = Math.min(elementCount, (j + 1) * window);
+		for(var i = (j * window) + 0; i < max; i++) {
 			elements.push(body.getChild(i));
 		}
 		renderMarkdown(elements, prefs);
+		var id = DocumentApp.getActiveDocument().getId();
+		DocumentApp.getActiveDocument().saveAndClose();
+      	DocumentApp.openById(id);
+		body = DocumentApp.getActiveDocument().getBody();
 	}
 
 	return [];
