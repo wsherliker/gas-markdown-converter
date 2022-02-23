@@ -55,8 +55,7 @@
     <div class="sidebar branding-below">
       <h1>Markdown Converter</h1>
       <p>
-        Please select some texts and click the "Convert" button. It will convert
-        the following Markdown syntax:
+        Please select some text and click the "Convert Selected" button OR click 'Convert All' to convert the entire document. Supported Markdown syntaxes are:
       </p>
       <ul>
         <li>**bold** => <strong>bold</strong></li>
@@ -64,9 +63,7 @@
 		<li># (at start of line) => Heading 1</li>
 		<li>## => Heading 2</li>
 		<li>### => Heading 3</li>
-		<li>>> => Right align paragraph</li>
-		<li>|| => Center align paragraph</li>
-        <li>- (at start of line) => Bulleted list</li>
+		<li>- (at start of line) => Bulleted list</li>
 		<li>`monospace` =>
           <span
             style="
@@ -77,7 +74,11 @@
             >monospace</span>
         </li>
       </ul>
-
+	  <p>Additional options are:</p>
+	  <ul>
+		<li>>> => Right align paragraph</li>
+		<li>|| => Center align paragraph</li>
+	  </ul>
       <p>
         Also, a code block marked with ``` will be converted to a pre-like
         table.
@@ -129,10 +130,10 @@ code block
           </div>
         </div>
         <div class="block" id="button-bar">
-          <button id="convert" class="blue">Convert Selected Text</button>
+          <button id="convert" class="blue">Convert Selected</button>
         </div>
 		<div class="block" id="button-bar">
-			<button id="convertAll" class="blue">Convert All Text</button>
+			<button id="convertAll" class="blue">Convert All</button>
 		  </div>
       </form>
     </div>

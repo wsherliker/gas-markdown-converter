@@ -181,6 +181,18 @@ function renderItalic(
 	text.deleteText(start, start);
 }
 
+function renderURL(
+	element: GoogleAppsScript.Document.RangeElement,
+	startPos: number,
+	length: number
+) {
+	const text = getTextToProcess(element).text;
+	const start = startPos;
+	const inclusiveEnd = start + length - 1;
+
+	text.setLinkUrl(start, inclusiveEnd, text.getText());
+}
+
 function renderCode(
 	element: GoogleAppsScript.Document.RangeElement,
 	startPos: number,
@@ -276,6 +288,10 @@ function renderMarkdown(
 
 			case 'heading3':
 				renderHeading(elements[action.line], action.startPos, action.length, DocumentApp.ParagraphHeading.HEADING3, 3);
+				break;
+
+			case 'url':
+				renderURL(elements[action.line], action.startPos, action.length);
 				break;
 
 			default:
