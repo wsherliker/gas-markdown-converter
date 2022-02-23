@@ -61,16 +61,20 @@
       <ul>
         <li>**bold** => <strong>bold</strong></li>
         <li>*italic* => <i>italic</i></li>
-        <li>
-          `monospace` =>
+		<li># (at start of line) => Heading 1</li>
+		<li>## => Heading 2</li>
+		<li>### => Heading 3</li>
+		<li>>> => Right align paragraph</li>
+		<li>|| => Center align paragraph</li>
+        <li>- (at start of line) => Bulleted list</li>
+		<li>`monospace` =>
           <span
             style="
               background-color: #f3f3f3;
               color: #cc0000;
               font-family: 'Roboto Mono';
             "
-            >monospace</span
-          >
+            >monospace</span>
         </li>
       </ul>
 
@@ -82,8 +86,7 @@
 ```
 code block
 code block
-```
-      </pre>
+```</pre>
       <p>will be converted to:</p>
       <table style="border-collapse: collapse; border: solid 1px #d0d0d0">
         <tr>
