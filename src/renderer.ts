@@ -190,7 +190,10 @@ function renderCode(
 }
 
 function getTextToProcess(rangeElement) {
-	if (rangeElement.isPartial()) {
+	if (element.getText) {
+		const raw = element.getText();
+		return { text, startIndex: 0, endIndex: raw.length - 1, raw };
+	} else if (rangeElement.isPartial && rangeElement.isPartial()) {
 		const text = rangeElement.getElement().asText();
 		const startIndex = rangeElement.getStartOffset();
 		const endIndex = rangeElement.getEndOffsetInclusive();
