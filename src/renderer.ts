@@ -78,7 +78,6 @@ function renderCodeBlock(
 	}
 }
 
-
 function renderList(
 	elements: GoogleAppsScript.Document.RangeElement[]
 ) {
@@ -95,7 +94,7 @@ function renderList(
 
 	// insert list items
 	for(var i = elements.length - 1; i >= 0; i--) {
-		var element = elements[i];
+		var e = elements[i];
 		var para = getParagraph(e.getElement());
 		var txt = para.editAsText();
 		if (txt.length < 2) { continue; }
