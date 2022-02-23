@@ -99,12 +99,36 @@ function renderRightAlign(
 ) {
 	const text = getTextToProcess(element).text;
 	const start = startPos;
-	const inclusiveEnd = start + length - 1;
-	text.deleteText(inclusiveEnd - 1, inclusiveEnd);
 	text.deleteText(start, start + 1);
 
 	const para = getParagraph(element.getElement());
 	para.setAlignment(DocumentApp.HorizontalAlignment.RIGHT);
+}
+
+function renderCenterAlign(
+	element: GoogleAppsScript.Document.RangeElement,
+	startPos: number,
+	length: number
+) {
+	const text = getTextToProcess(element).text;
+	const start = startPos;
+	text.deleteText(start, start + 1);
+
+	const para = getParagraph(element.getElement());
+	para.setAlignment(DocumentApp.HorizontalAlignment.CENTER);
+}
+
+function renderHeading1(
+	element: GoogleAppsScript.Document.RangeElement,
+	startPos: number,
+	length: number
+) {
+	const text = getTextToProcess(element).text;
+	const start = startPos;
+	text.deleteText(start, start);
+
+	const para = getParagraph(element.getElement());
+	para.setHeading(DocumentApp.ParagraphHeading.HEADING1);
 }
 
 function renderItalic(
@@ -187,6 +211,14 @@ function renderMarkdown(
 
 			case 'rightalign':
 				renderRightAlign(elements[action.line], action.startPos, action.length);
+				break;
+
+			case 'centeralign':
+				renderCenterAlign(elements[action.line], action.startPos, action.length);
+				break;
+
+			case 'heading1':
+				renderHeading1(elements[action.line], action.startPos, action.length);
 				break;
 
 			default:

@@ -110,8 +110,24 @@ function replaceBold(raw: string) {
   return { actions, masked };
 }
 
+function replaceHeading1(raw: string) {
+	const matches = matchAll(/^#[^#]+/g, raw);
+	const actions = matches.map(
+		(m) =>
+		({
+			type: "heading1",
+			line: 0,
+			startPos: m.index,
+			length: m[0].length,
+		} as InlineAction)
+	);
+
+	const masked = maskInlineActions(actions, raw);
+	return { actions, masked };
+}
+
 function replaceRightAlign(raw: string) {
-  const matches = matchAll(/>>(?:[^>]+?)>>/g, raw);
+  const matches = matchAll(/>>/g, raw);
   const actions = matches.map(
     (m) =>
       ({
@@ -125,6 +141,22 @@ function replaceRightAlign(raw: string) {
   const masked = maskInlineActions(actions, raw);
   return { actions, masked };
 }
+
+function replaceCenterAlign(raw: string) {
+	const matches = matchAll(/||/g, raw);
+	const actions = matches.map(
+	  (m) =>
+		({
+		  type: "centeralign",
+		  line: 0,
+		  startPos: m.index,
+		  length: m[0].length,
+		} as InlineAction)
+	);
+
+	const masked = maskInlineActions(actions, raw);
+	return { actions, masked };
+  }
 
 function replaceItalic(raw: string) {
   const matches = matchAll(/\*(?:[^*]+?)\*/g, raw).filter((m) => {
@@ -197,7 +229,7 @@ function pipeReplaceFunctions(funcs: ReplaceFunction[], raw: string) {
 
 function replaceInlineMarkdown(raw: string): InlineAction[] {
   const { actions } = pipeReplaceFunctions(
-    [replaceBold, replaceItalic, replaceCode, replaceRightAlign],
+    [replaceBold, replaceItalic, replaceCode, replaceRightAlign, replaceCenterAlign, replaceHeading1],
     raw
   );
   actions.sort((a, b) => b.startPos - a.startPos);
@@ -244,6 +276,8 @@ export default {
   replaceInlineMarkdown,
   replaceCodeBlock,
   replaceRightAlign,
+  replaceCenterAlign,
+  replaceHeading1,
   parseMarkdown,
   maskInlineActions,
 };
