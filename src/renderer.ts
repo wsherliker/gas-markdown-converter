@@ -9,7 +9,15 @@ type Preference = {
 	codeblockDarkMode: boolean;
 };
 
-function getParagraph(element: GoogleAppsScript.Document.Element) {
+function getRootElement(e) {
+	if (e.getElement) {
+		return element.getElement();
+	}
+	return e;
+}
+
+function getParagraph(element: Object) {
+	element = getRootElement(element);
 	while (element.getType() !== DocumentApp.ElementType.PARAGRAPH) {
 		element = element.getParent();
 	}
@@ -21,7 +29,7 @@ function renderCodeBlock(
 	useTable: boolean,
 	darkMode: boolean
 ) {
-	const paragraph = getParagraph(elements[0].getElement());
+	const paragraph = getParagraph(elements[0]);
 	if (!paragraph) {
 		return;
 	}
@@ -31,7 +39,7 @@ function renderCodeBlock(
 
 	if (useTable) {
 		// remove paragraph
-		elements.forEach((e) => e.getElement().removeFromParent());
+		elements.forEach((e) => getRootElement(e).removeFromParent());
 
 		// insert table (use an empty string as a placeholder)
 		const table = body.insertTable(pos + 1, [[""]]);
@@ -42,7 +50,7 @@ function renderCodeBlock(
 
 		// create table content
 		elements.slice(1, -1).forEach((e) => {
-			const text = e.getElement().asText();
+			const text = getRootElement(e).asText();
 			text.setFontFamily("Roboto Mono");
 			text.setFontSize(9);
 
@@ -50,7 +58,7 @@ function renderCodeBlock(
 				text.setForegroundColor("#eeeeee");
 			}
 
-			const paragraph = getParagraph(e.getElement());
+			const paragraph = getParagraph(e);
 			cell.appendParagraph(paragraph);
 		});
 
@@ -67,21 +75,21 @@ function renderCodeBlock(
 	} else {
 		// without table, simply change the font style
 		elements.forEach((e) => {
-			const text = e.getElement().asText();
+			const text = getRootElement(e).asText();
 			text.setFontFamily("Roboto Mono");
 			text.setFontSize(9);
 		});
 
 		// remove tags
-		elements[0].getElement().removeFromParent();
-		elements[elements.length - 1].getElement().removeFromParent();
+		getRootElement(elements[0]).removeFromParent();
+		getRootElement(elements[elements.length - 1]).removeFromParent();
 	}
 }
 
 function renderList(
 	elements: GoogleAppsScript.Document.RangeElement[]
 ) {
-	const paragraph = getParagraph(elements[0].getElement());
+	const paragraph = getParagraph(elements[0]);
 	if (!paragraph) {
 		return;
 	}
@@ -90,12 +98,12 @@ function renderList(
 	const pos = body.getChildIndex(paragraph);
 
 	// remove paragraphs
-	elements.forEach((e) => e.getElement().removeFromParent());
+	elements.forEach((e) => getRootElement(e).removeFromParent());
 
 	// insert list items
 	for(var i = elements.length - 1; i >= 0; i--) {
 		var e = elements[i];
-		var para = getParagraph(e.getElement());
+		var para = getParagraph(e);
 		var txt = para.editAsText().getText();
 		if (txt.length < 2) { continue; }
 		txt = txt.substr(2);
@@ -127,7 +135,7 @@ function renderRightAlign(
 	const start = startPos;
 	text.deleteText(start, start + 1);
 
-	const para = getParagraph(element.getElement());
+	const para = getParagraph(element);
 	para.setAlignment(DocumentApp.HorizontalAlignment.RIGHT);
 }
 
@@ -140,7 +148,7 @@ function renderCenterAlign(
 	const start = startPos;
 	text.deleteText(start, start + 1);
 
-	const para = getParagraph(element.getElement());
+	const para = getParagraph(element);
 	para.setAlignment(DocumentApp.HorizontalAlignment.CENTER);
 }
 
@@ -155,7 +163,7 @@ function renderHeading(
 	const start = startPos;
 	text.deleteText(start, start + chars - 1);
 
-	const para = getParagraph(element.getElement());
+	const para = getParagraph(element);
 	para.setHeading(heading);
 }
 
@@ -190,17 +198,17 @@ function renderCode(
 }
 
 function getTextToProcess(rangeElement) {
-	if (element.getText) {
-		const raw = element.getText();
+	if (rangeElement.getText) {
+		const raw = rangeElement.getText();
 		return { text, startIndex: 0, endIndex: raw.length - 1, raw };
 	} else if (rangeElement.isPartial && rangeElement.isPartial()) {
-		const text = rangeElement.getElement().asText();
+		const text = getRootElement(rangeElement).asText();
 		const startIndex = rangeElement.getStartOffset();
 		const endIndex = rangeElement.getEndOffsetInclusive();
 		const raw = text.getText().substring(startIndex, endIndex + 1);
 		return { text, startIndex, endIndex, raw };
 	} else {
-		const element = rangeElement.getElement();
+		const element = getRootElement(rangeElement);
 		if (element.editAsText) {
 			const text = element.asText();
 			const raw = text.getText();
