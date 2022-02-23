@@ -25,7 +25,7 @@ type Preference = {
 function onOpen(e) {
 	DocumentApp.getUi()
 		.createAddonMenu()
-		.addItem("Start", "showSidebar")
+		.addItem("Show Sidebar", "showSidebar")
 		.addItem("Convert Selected", "convertSelectedText")
 		.addItem("Convert All", "convertAllText")
 		.addToUi();
