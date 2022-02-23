@@ -279,9 +279,7 @@ export default {
   replaceCodeBlock,
   replaceRightAlign,
   replaceCenterAlign,
-  replaceHeading1,
-  replaceHeading2,
-  replaceHeading3,
+  replaceHeadings,
   parseMarkdown,
   maskInlineActions,
 };
