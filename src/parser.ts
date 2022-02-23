@@ -27,7 +27,7 @@ function replaceCodeBlock(lines: LineData[]): CodeBlockAction[] {
     const line = lines[i];
 
     // skip partial lines
-    if (!line || line.startIndex > 0) {
+    if (!line || line.startIndex > 0 || !line.raw || line.raw.length === 0) {
       i++;
       continue;
     }
