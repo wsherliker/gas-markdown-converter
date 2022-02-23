@@ -244,6 +244,8 @@ function parseMarkdown(lines: Array<LineData>) {
   actions = actions.concat(codeBlockActions);
 
   for (let i = 0; i < lines.length; i++) {
+	if (!lines[i]) { continue;}
+
     // Skip line if line[i] is already converted to a code block
     if (
       codeBlockActions.some(
