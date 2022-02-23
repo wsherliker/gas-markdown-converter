@@ -5,7 +5,7 @@ export type CodeBlockAction = {
 };
 
 export type InlineAction = {
-  type: "bold" | "italic" | "code";
+  type: "bold" | "italic" | "code" | "rightalign";
   line: number;
   startPos: number;
   length: number;
@@ -110,6 +110,22 @@ function replaceBold(raw: string) {
   return { actions, masked };
 }
 
+function replaceRightAlign(raw: string) {
+  const matches = matchAll(/>>(?:[^>]+?)>>/g, raw);
+  const actions = matches.map(
+    (m) =>
+      ({
+        type: "rightalign",
+        line: 0,
+        startPos: m.index,
+        length: m[0].length,
+      } as InlineAction)
+  );
+
+  const masked = maskInlineActions(actions, raw);
+  return { actions, masked };
+}
+
 function replaceItalic(raw: string) {
   const matches = matchAll(/\*(?:[^*]+?)\*/g, raw).filter((m) => {
     // filter out '**bold**' since GAS does not support lookbehind
@@ -181,7 +197,7 @@ function pipeReplaceFunctions(funcs: ReplaceFunction[], raw: string) {
 
 function replaceInlineMarkdown(raw: string): InlineAction[] {
   const { actions } = pipeReplaceFunctions(
-    [replaceBold, replaceItalic, replaceCode],
+    [replaceBold, replaceItalic, replaceCode, replaceRightAlign],
     raw
   );
   actions.sort((a, b) => b.startPos - a.startPos);
@@ -227,6 +243,7 @@ export default {
   replaceCode,
   replaceInlineMarkdown,
   replaceCodeBlock,
+  replaceRightAlign,
   parseMarkdown,
   maskInlineActions,
 };

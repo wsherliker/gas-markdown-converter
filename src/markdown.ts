@@ -9,8 +9,8 @@
  */
 
 type Preference = {
-  codeblockUseTable: boolean;
-  codeblockDarkMode: boolean;
+	codeblockUseTable: boolean;
+	codeblockDarkMode: boolean;
 };
 
 /**
@@ -23,10 +23,10 @@ type Preference = {
  *     running in, inspect e.authMode.
  */
 function onOpen(e) {
-  DocumentApp.getUi()
-    .createAddonMenu()
-    .addItem("Start", "showSidebar")
-    .addToUi();
+	DocumentApp.getUi()
+		.createAddonMenu()
+		.addItem("Start", "showSidebar")
+		.addToUi();
 }
 
 /**
@@ -35,10 +35,10 @@ function onOpen(e) {
  * the mobile add-on version.
  */
 function showSidebar() {
-  var ui = HtmlService.createHtmlOutputFromFile("sidebar").setTitle(
-    "Markdown Converter"
-  );
-  DocumentApp.getUi().showSidebar(ui);
+	var ui = HtmlService.createHtmlOutputFromFile("sidebar").setTitle(
+		"Markdown Converter"
+	);
+	DocumentApp.getUi().showSidebar(ui);
 }
 
 /**
@@ -53,17 +53,17 @@ function showSidebar() {
  *     AuthMode.NONE.)
  */
 function onInstall(e) {
-  onOpen(e);
+	onOpen(e);
 }
 
 function getPreferences(): Preference {
-  const userProperties = PropertiesService.getUserProperties();
-  return {
-    codeblockUseTable:
-      userProperties.getProperty("codeblockUseTable") === "true",
-    codeblockDarkMode:
-      userProperties.getProperty("codeblockDarkMode") === "true",
-  };
+	const userProperties = PropertiesService.getUserProperties();
+	return {
+		codeblockUseTable:
+			userProperties.getProperty("codeblockUseTable") === "true",
+		codeblockDarkMode:
+			userProperties.getProperty("codeblockDarkMode") === "true",
+	};
 }
 
 /**
@@ -73,16 +73,17 @@ function getPreferences(): Preference {
  * @return {Array.<string>} The selected text.
  */
 function convertSelectedText(prefs: Preference) {
-  const { codeblockUseTable, codeblockDarkMode } = prefs;
+	if (!prefs) { prefs = { codeblockUseTable: false, codeblockDarkMode: false }; }
+	const { codeblockUseTable, codeblockDarkMode } = prefs;
 
-  PropertiesService.getUserProperties()
-    .setProperty("codeblockUseTable", codeblockUseTable ? "true" : "")
-    .setProperty("codeblockDarkMode", codeblockDarkMode ? "true" : "");
+	PropertiesService.getUserProperties()
+		.setProperty("codeblockUseTable", codeblockUseTable ? "true" : "")
+		.setProperty("codeblockDarkMode", codeblockDarkMode ? "true" : "");
 
-  const selection = DocumentApp.getActiveDocument().getSelection();
-  if (selection) {
-    const elements = selection.getRangeElements();
-    renderMarkdown(elements, prefs);
-  }
-  return [];
+	const selection = DocumentApp.getActiveDocument().getSelection();
+	if (selection) {
+		const elements = selection.getRangeElements();
+		renderMarkdown(elements, prefs);
+	}
+	return [];
 }
