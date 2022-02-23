@@ -11,7 +11,7 @@ type Preference = {
 
 function getRootElement(e) {
 	if (e.getElement) {
-		return element.getElement();
+		return e.getElement();
 	}
 	return e;
 }
