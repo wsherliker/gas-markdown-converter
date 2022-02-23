@@ -107,7 +107,7 @@ function renderList(
 		var txt = para.editAsText().getText();
 		if (txt.length < 2) { continue; }
 		txt = txt.substr(2);
-		var li = body.insertListItem(pos + 1, txt);
+		var li = body.insertListItem(pos, txt);
 		li.setGlyphType(DocumentApp.GlyphType.BULLET);
 	}
 }
@@ -200,6 +200,7 @@ function renderCode(
 function getTextToProcess(rangeElement) {
 	if (rangeElement.getText) {
 		const raw = rangeElement.getText();
+		const text = raw;
 		return { text, startIndex: 0, endIndex: raw.length - 1, raw };
 	} else if (rangeElement.isPartial && rangeElement.isPartial()) {
 		const text = getRootElement(rangeElement).asText();
