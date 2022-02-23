@@ -126,8 +126,11 @@ code block
           </div>
         </div>
         <div class="block" id="button-bar">
-          <button id="convert" class="blue">Convert</button>
+          <button id="convert" class="blue">Convert Selected Text</button>
         </div>
+		<div class="block" id="button-bar">
+			<button id="convertAll" class="blue">Convert All Text</button>
+		  </div>
       </form>
     </div>
 
@@ -147,6 +150,8 @@ code block
 
       $(function () {
         $("#convert").click(convertSelectedText);
+
+		$("#convertAll").click(convertAllText);
 
         // disable dark mode if use table not checked
         $("#codeblock-use-table").change(() => {
