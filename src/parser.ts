@@ -143,7 +143,7 @@ function replaceRightAlign(raw: string) {
 }
 
 function replaceCenterAlign(raw: string) {
-	const matches = matchAll(/||/g, raw);
+	const matches = matchAll(/\|\|/g, raw);
 	const actions = matches.map(
 	  (m) =>
 		({
