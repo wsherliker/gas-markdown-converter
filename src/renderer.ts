@@ -118,17 +118,18 @@ function renderCenterAlign(
 	para.setAlignment(DocumentApp.HorizontalAlignment.CENTER);
 }
 
-function renderHeading1(
+function renderHeading(
 	element: GoogleAppsScript.Document.RangeElement,
 	startPos: number,
-	length: number
+	length: number,
+	heading: DocumentApp.ParagraphHeading
 ) {
 	const text = getTextToProcess(element).text;
 	const start = startPos;
 	text.deleteText(start, start);
 
 	const para = getParagraph(element.getElement());
-	para.setHeading(DocumentApp.ParagraphHeading.HEADING1);
+	para.setHeading(heading);
 }
 
 function renderItalic(
@@ -218,7 +219,15 @@ function renderMarkdown(
 				break;
 
 			case 'heading1':
-				renderHeading1(elements[action.line], action.startPos, action.length);
+				renderHeading(elements[action.line], action.startPos, action.length, DocumentApp.ParagraphHeading.HEADING1);
+				break;
+
+			case 'heading2':
+				renderHeading(elements[action.line], action.startPos, action.length, DocumentApp.ParagraphHeading.HEADING2);
+				break;
+
+			case 'heading3':
+				renderHeading(elements[action.line], action.startPos, action.length, DocumentApp.ParagraphHeading.HEADING3);
 				break;
 
 			default:

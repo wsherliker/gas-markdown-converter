@@ -110,16 +110,16 @@ function replaceBold(raw: string) {
   return { actions, masked };
 }
 
-function replaceHeading1(raw: string) {
-	const matches = matchAll(/^#[^#]+/g, raw);
+function replaceHeadings(raw: string) {
+	const matches = matchAll(/^(#+)/g, raw);
 	const actions = matches.map(
 		(m) =>
-		({
-			type: "heading1",
-			line: 0,
-			startPos: m.index,
-			length: m[0].length,
-		} as InlineAction)
+			({
+				type: "heading" + m[0].length,
+				line: 0,
+				startPos: m.index,
+				length: m[0].length,
+			} as InlineAction);
 	);
 
 	const masked = maskInlineActions(actions, raw);
@@ -229,7 +229,7 @@ function pipeReplaceFunctions(funcs: ReplaceFunction[], raw: string) {
 
 function replaceInlineMarkdown(raw: string): InlineAction[] {
   const { actions } = pipeReplaceFunctions(
-    [replaceBold, replaceItalic, replaceCode, replaceRightAlign, replaceCenterAlign, replaceHeading1],
+    [replaceBold, replaceItalic, replaceCode, replaceRightAlign, replaceCenterAlign, replaceHeadings],
     raw
   );
   actions.sort((a, b) => b.startPos - a.startPos);
@@ -246,7 +246,7 @@ function parseMarkdown(lines: Array<LineData>) {
   for (let i = 0; i < lines.length; i++) {
 	if (!lines[i]) { continue;}
 
-    // Skip line if line[i] is already converted to a code block
+	// Skip line if line[i] is already converted to a code block
     if (
       codeBlockActions.some(
         (cba) => cba.line <= i && i < cba.line + cba.numOfLines
@@ -280,6 +280,8 @@ export default {
   replaceRightAlign,
   replaceCenterAlign,
   replaceHeading1,
+  replaceHeading2,
+  replaceHeading3,
   parseMarkdown,
   maskInlineActions,
 };
