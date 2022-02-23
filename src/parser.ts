@@ -62,15 +62,17 @@ function replaceCodeBlock(lines: LineData[]): CodeBlockAction[] {
 		let j = i + 1;
 		while (j < lines.length) {
 		  // Found end tag, return action
-		  if (lines[j].raw.substr(0,1) != "-") {
+		  if (lines[j].raw.substr(0,1) != "-" || j == lines.length - 1) {
+			countLines = j - i;
+			if (j == lines.length - 1 && lines[j].raw.substr(0,1) == "-") { countLines += 1; }
 			actions.push({
 			  type: "list",
 			  line: i,
-			  numOfLines: j - i,
+			  numOfLines: countLines,
 			});
 
 			// continue searching for next code block from next line
-			i = j + 1;
+			i = j;
 			break;
 		  }
 
@@ -79,7 +81,7 @@ function replaceCodeBlock(lines: LineData[]): CodeBlockAction[] {
 
 		// if end tag not found, then no need to search for other start tags
 		if (j >= lines.length) {
-		  break;
+		  	break;
 		}
 	  }
     i++;

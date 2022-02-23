@@ -96,10 +96,11 @@ function renderList(
 	for(var i = elements.length - 1; i >= 0; i--) {
 		var e = elements[i];
 		var para = getParagraph(e.getElement());
-		var txt = para.editAsText();
+		var txt = para.editAsText().getText();
 		if (txt.length < 2) { continue; }
-		txt = txt.substring(2);
-		body.insertListItem(pos + 1, txt);
+		txt = txt.substr(2);
+		var li = body.insertListItem(pos + 1, txt);
+		li.setGlyphType(DocumentApp.GlyphType.BULLET);
 	}
 }
 
@@ -213,7 +214,10 @@ function renderMarkdown(
 
 	const lines = elements.map((e) => getTextToProcess(e));
 	const actions = parseMarkdown(lines);
-	actions.forEach((action) => {
+
+	for(var i = actions.length - 1; i >=0; i--) {
+		action = actions[i];
+
 		// Handle current action
 		switch (action.type) {
 			case "codeblock":
@@ -265,7 +269,7 @@ function renderMarkdown(
 			default:
 				break;
 		}
-	});
+	}
 }
 
 export default {};
