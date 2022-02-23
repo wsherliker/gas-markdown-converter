@@ -103,7 +103,7 @@ function renderRightAlign(
 	text.deleteText(inclusiveEnd - 1, inclusiveEnd);
 	text.deleteText(start, start + 1);
 
-	const para = element.getParent().asParagraph();
+	const para = getParagraph(element.getElement());
 	para.setAlignment(DocumentApp.HorizontalAlignment.RIGHT);
 }
 
