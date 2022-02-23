@@ -62,7 +62,7 @@ function replaceCodeBlock(lines: LineData[]): CodeBlockAction[] {
 		let j = i + 1;
 		while (j < lines.length) {
 		  // Found end tag, return action
-		  if (line.raw.substr(0,1) != "-") {
+		  if (lines[j].raw.substr(0,1) != "-") {
 			actions.push({
 			  type: "list",
 			  line: i,
