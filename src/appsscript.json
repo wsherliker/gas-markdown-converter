@@ -1,13 +1,28 @@
 {
-  "timeZone": "America/New_York",
-  "dependencies": {
-    "libraries": [
-    ]
-  },
-  "exceptionLogging": "STACKDRIVER",
-  "runtimeVersion": "V8",
-  "oauthScopes": [
-    "https://www.googleapis.com/auth/script.container.ui",
-    "https://www.googleapis.com/auth/documents"
-  ]
-}
+	"timeZone": "Europe/London",
+	"dependencies": {
+	  "libraries": [
+	  ]
+	},
+	"exceptionLogging": "STACKDRIVER",
+	"runtimeVersion": "V8",
+	"oauthScopes": [
+	  "https://www.googleapis.com/auth/script.container.ui",
+	  "https://www.googleapis.com/auth/documents"
+	],
+	"addOns": {
+	  "common": {
+		"name": "Markdown to Google Doc converter",
+		"logoUrl": "https://lh3.googleusercontent.com/-kS9NtcvEJTg/YhZE2J-4GtI/AAAAAAAAfqU/3c3OE_hpWz0mtWwiFhiSUux8ku1DUF-HACNcBGAsYHQ/s400/markdown--v2x64.png",
+		"useLocaleFromApp": true,
+		"layoutProperties": {
+			"primaryColor": "#2772ed"
+		}
+	  },
+	  "docs": {
+		"homepageTrigger": {
+		  "runFunction": "onOpen"
+		}
+	  }
+	}
+  }

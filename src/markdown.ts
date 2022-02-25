@@ -1,12 +1,3 @@
-/**
- * @OnlyCurrentDoc
- *
- * The above comment directs Apps Script to limit the scope of file
- * access for this add-on. It specifies that this add-on will only
- * attempt to read or modify the files in which the add-on is used,
- * and not all of the user's files. The authorization request message
- * presented to users will reflect this limited scope.
- */
 
 type Preference = {
 	codeblockUseTable: boolean;
@@ -102,13 +93,17 @@ function convertAllText(prefs: Preference) {
 	var body = DocumentApp.getActiveDocument().getBody();
 	var elementCount = body.getNumChildren();
 	var loops = Math.ceil(elementCount / window);
+	Logger.log("Starting processing...");
 	for (var j = 0; j < loops; j++) {
+		Logger.log("Loop " + j);
 		var elements = [];
 		var max = Math.min(elementCount, (j + 1) * window);
 		for(var i = (j * window) + 0; i < max; i++) {
 			elements.push(body.getChild(i));
 		}
 		renderMarkdown(elements, prefs);
+
+		// Force Google Docs to push changes to the document rather than caching them - avoids issues with large docs and running out of memory
 		var id = DocumentApp.getActiveDocument().getId();
 		DocumentApp.getActiveDocument().saveAndClose();
       	DocumentApp.openById(id);
